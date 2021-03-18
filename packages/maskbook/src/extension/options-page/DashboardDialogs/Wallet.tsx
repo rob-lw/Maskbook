@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, ChangeEvent, useContext } from 'react'
-import { useAsync, useAsyncRetry, useCopyToClipboard } from 'react-use'
+import { useAsync, useCopyToClipboard } from 'react-use'
 import { Send as SendIcon } from 'react-feather'
 import { DashboardDialogCore, DashboardDialogWrapper, WrappedDialogProps, useSnackbarCallback } from './Base'
 import {
@@ -22,7 +22,6 @@ import {
     Chip,
     InputAdornment,
     IconButton,
-    Card,
 } from '@material-ui/core'
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined'
@@ -67,6 +66,7 @@ import { formatBalance, formatEthereumAddress } from '../../../plugins/Wallet/fo
 import { useTokenTransferCallback } from '../../../web3/hooks/useTokenTransferCallback'
 import { WalletAssetsTableContext } from '../DashboardComponents/WalletAssetsTable'
 import { CollectibleContext } from '../DashboardComponents/CollectibleList'
+import { Flags } from '../../../utils/flags'
 
 //#region predefined token selector
 const useERC20PredefinedTokenSelectorStyles = makeStyles((theme) =>
@@ -432,14 +432,16 @@ export function DashboardWalletBackupDialog(props: WrappedDialogProps<WalletProp
                 constraintSecondary={false}
                 content={
                     <>
-                        {wallet?.mnemonic.length ? (
+                        {Flags.wallet_mnemonic_words_backup_enabled && wallet?.mnemonic.length ? (
                             <section className={classes.section}>
                                 <ShowcaseBox title={t('mnemonic_words')}>{wallet.mnemonic.join(' ')}</ShowcaseBox>
                             </section>
                         ) : null}
-                        <section className={classes.section}>
-                            <ShowcaseBox title={t('private_key')}>{privateKeyInHex}</ShowcaseBox>
-                        </section>
+                        {Flags.wallet_private_key_backup_enabled ? (
+                            <section className={classes.section}>
+                                <ShowcaseBox title={t('private_key')}>{privateKeyInHex}</ShowcaseBox>
+                            </section>
+                        ) : null}
                     </>
                 }
             />
