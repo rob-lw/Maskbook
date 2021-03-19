@@ -22,6 +22,7 @@ import RefreshIcon from '@material-ui/icons/Refresh'
 import ActionButton from '../../../extension/options-page/DashboardComponents/ActionButton'
 import { useMnemonicWordsPuzzle } from '../hooks/useMnemonicWordsPuzzle'
 import { WALLET_OR_PERSONA_NAME_MAX_LEN } from '../../../utils/constants'
+import { ETHEREUM_WALLET_DERIVE_PATH } from '../constants'
 
 enum CreateWalletStep {
     Name = 0,
@@ -126,11 +127,17 @@ export function CreateWalletDialog(props: CreateWalletDialogProps) {
         }
     }, [step, resetCallback])
     const onSubmit = useSnackbarCallback(
-        () =>
-            WalletRPC.importNewWallet({
+        async () => {
+            await WalletRPC.importNewWallet({
                 name,
                 mnemonic: words,
-            }),
+            })
+            await WalletRPC.addPhrase({
+                path: ETHEREUM_WALLET_DERIVE_PATH,
+                mnemonic: words,
+                passphrase: '',
+            })
+        },
         [name, words],
         onClose,
     )
